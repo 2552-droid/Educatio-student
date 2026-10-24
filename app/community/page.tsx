@@ -245,7 +245,7 @@ export default async function CommunityPage() {
                   href="/auth?mode=signin"
                   className="block text-center w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-2xl transition-colors text-xs shadow-sm"
                 >
-                  Sign In to Participate
+                  Sign In to Participates
                 </Link>
               )}
             </div>
