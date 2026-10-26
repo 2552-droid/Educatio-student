@@ -1,33 +1,46 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import Credentials from "next-auth/providers/credentials"
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
+// ❌ Remove: import Apple from "next-auth/providers/apple";
+import Credentials from "next-auth/providers/credentials";
+import { globalOtpStore } from "@/app/api/auth/send-otp/route";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+    Google,
+    GitHub,
+    // ❌ Remove: Apple,
     Credentials({
-      name: "Credentials",
+      id: "phone-number",
+      name: "Phone Number",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        phone: { label: "Phone Number", type: "text" },
+        otp: { label: "OTP Code", type: "text" },
       },
       async authorize(credentials) {
-        // Perform server-side validation against your database
-        if (credentials?.email && credentials?.password) {
-          return {
-            id: "1",
-            name: "Alex Johnson",
-            email: credentials.email as string,
-          }
+        if (!credentials?.phone || !credentials?.otp) {
+          return null;
         }
-        return null
+
+        const phone = credentials.phone as string;
+        const submittedOtp = credentials.otp as string;
+
+        const validOtp = globalOtpStore.get(phone);
+
+        if (!validOtp || validOtp !== submittedOtp) {
+          throw new Error("Invalid or expired OTP code.");
+        }
+
+        globalOtpStore.delete(phone);
+
+        let user = {
+          id: phone,
+          name: "Phone User",
+          email: `${phone.replace(/[^0-9]/g, "")}@phone.auth`,
+        };
+
+        return user;
       },
     }),
   ],
-  pages: {
-    signIn: "/auth", // Points to your custom auth page (`app/auth/page.tsx`)
-  },
-})
+});

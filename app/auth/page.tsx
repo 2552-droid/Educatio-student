@@ -1,3 +1,4 @@
+import { PhoneAuthSection } from "@/app/components/PhoneAuthSection";
 import { auth, signIn } from "@/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -5,7 +6,9 @@ import {
   FaArrowLeftLong,
   FaEnvelope,
   FaLock,
-  FaUser
+  FaUser,
+  FaGithub,
+  // FaApple removed
 } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 
@@ -14,11 +17,9 @@ export default async function AuthPage({
 }: {
   searchParams?: Promise<{ mode?: string; callbackUrl?: string }>;
 }) {
-  // Check active session using NextAuth helper
   const session = await auth();
   const params = await searchParams;
 
-  // If user is already authenticated, redirect to home or dashboard
   if (session?.user) {
     redirect(params?.callbackUrl || "/");
   }
@@ -32,15 +33,11 @@ export default async function AuthPage({
         {/* Visual / Brand Banner Side */}
         <div className="md:w-1/2 bg-[url('/bg2.jpeg')] bg-no-repeat bg-center bg-cover relative hidden md:flex flex-col justify-between p-12 text-white">
           <div className="absolute inset-0 bg-black/60 z-0"></div>
-
-          {/* Logo */}
           <div className="relative z-10">
             <Link href="/" className="text-3xl font-bold tracking-wider">
               Educatio<span className="text-[#2a6ee5]">.</span>
             </Link>
           </div>
-
-          {/* Hero Pitch */}
           <div className="relative z-10 space-y-4">
             <span className="bg-[#2a6ee5] text-white font-bold text-xs uppercase tracking-widest px-3 py-1 rounded-full">
               Join Our Academic Community
@@ -53,15 +50,13 @@ export default async function AuthPage({
               Unlock hundreds of comprehensive study guides, connect with passionate learners, and master the core foundations of your field.
             </p>
           </div>
-
-          {/* Quote */}
           <div className="relative z-10 pt-6 border-t border-white/20 text-lg font-semibold text-[#FFDD9C]">
             "Elevate your learning journey..."
           </div>
         </div>
 
         {/* Auth Form Side */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between relative bg-white">
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between relative bg-white overflow-y-auto max-h-[90vh]">
 
           {/* Navigation Bar */}
           <div className="flex justify-between items-center mb-6">
@@ -97,35 +92,50 @@ export default async function AuthPage({
             </p>
           </div>
 
-          {/* Google OAuth Form (Auth.js standard pattern) */}
-          <div className="space-y-4">
+          {/* OAuth Providers Stack (Google & GitHub only) */}
+          <div className="space-y-3">
+            {/* Google Sign-In */}
             <form
               action={async () => {
                 "use server";
-                await signIn("google", {
-                  redirectTo: params?.callbackUrl || "/",
-                });
+                await signIn("google", { redirectTo: params?.callbackUrl || "/" });
               }}
             >
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-3.5 px-4 rounded-xl transition-all shadow-sm cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all shadow-sm cursor-pointer text-sm"
               >
-                <FcGoogle className="text-2xl" />
+                <FcGoogle className="text-xl" />
                 <span>{isSignUp ? "Sign up with Google" : "Sign in with Google"}</span>
               </button>
             </form>
 
+            {/* GitHub Sign-In */}
+            <form
+              action={async () => {
+                "use server";
+                await signIn("github", { redirectTo: params?.callbackUrl || "/" });
+              }}
+            >
+              <button
+                type="submit"
+                className="w-full flex items-center justify-center gap-3 bg-gray-900 border border-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-sm cursor-pointer text-sm"
+              >
+                <FaGithub className="text-xl" />
+                <span>{isSignUp ? "Sign up with GitHub" : "Sign in with GitHub"}</span>
+              </button>
+            </form>
+
             {/* Divider */}
-            <div className="relative flex items-center justify-center my-6">
+            <div className="relative flex items-center justify-center my-4">
               <div className="border-t border-gray-200 w-full"></div>
               <span className="bg-white px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider absolute">
-                Or continue with email
+                Or continue with email / phone
               </span>
             </div>
           </div>
 
-          {/* Email / Password Credentials Form Action */}
+          {/* Email & Credentials Form Action */}
           <form
             action={async (formData: FormData) => {
               "use server";
@@ -140,7 +150,6 @@ export default async function AuthPage({
             }}
             className="space-y-4"
           >
-            {/* Full Name (Sign Up Mode) */}
             {isSignUp && (
               <div className="space-y-1">
                 <label htmlFor="name" className="text-xs font-bold text-gray-700 uppercase tracking-wider">
@@ -171,7 +180,6 @@ export default async function AuthPage({
                   type="email"
                   name="email"
                   placeholder="alex@example.com"
-                  required
                   className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2a6ee5]/50 transition-all text-gray-900"
                 />
                 <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
@@ -196,44 +204,23 @@ export default async function AuthPage({
                   type="password"
                   name="password"
                   placeholder="••••••••"
-                  required
                   className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2a6ee5]/50 transition-all text-gray-900"
                 />
                 <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
               </div>
             </div>
 
-            {/* Terms Checkbox */}
-            {isSignUp && (
-              <div className="flex items-center gap-2 pt-1">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  name="terms"
-                  required
-                  className="w-4 h-4 text-[#2a6ee5] border-gray-300 rounded focus:ring-[#2a6ee5] cursor-pointer"
-                />
-                <label htmlFor="terms" className="text-xs text-gray-500">
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-gray-900 font-semibold underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/privacy" className="text-gray-900 font-semibold underline">
-                    Privacy Policy
-                  </Link>
-                </label>
-              </div>
-            )}
-
             {/* Action Submit Button */}
             <button
               type="submit"
-              className="w-full bg-[#2a6ee5] hover:bg-[#184dd4] text-white font-bold py-3.5 rounded-xl transition-all shadow-md shadow-[#2a6ee5]/20 mt-2 cursor-pointer"
+              className="w-full bg-[#2a6ee5] hover:bg-[#184dd4] text-white font-bold py-3 rounded-xl transition-all shadow-md shadow-[#2a6ee5]/20 mt-2 cursor-pointer text-sm"
             >
-              {isSignUp ? "Create Account" : "Sign In"}
+              {isSignUp ? "Create Account with Email" : "Sign In with Email"}
             </button>
           </form>
+
+          {/* Alternative Phone Number Login Section */}
+          <PhoneAuthSection />
 
         </div>
       </div>

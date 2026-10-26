@@ -1,8 +1,9 @@
 "use client";
-
+import { PhoneAuthSection } from "@/app/components/PhoneAuthSection";
 import { useState } from "react";
 import Link from "next/link";
 import { FaEnvelope, FaLock, FaArrowLeft, FaShieldAlt } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 
 export default function AccountLoginPage() {
@@ -16,6 +17,12 @@ export default function AccountLoginPage() {
     window.location.href = "/api/auth/signin/google";
   };
 
+  const handleGithubLogin = () => {
+    setLoading(true);
+    // Redirects to Auth.js GitHub authentication route
+    window.location.href = "/api/auth/signin/github";
+  };
+
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -27,8 +34,8 @@ export default function AccountLoginPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans text-gray-900">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-8 space-y-8 relative overflow-hidden">
-        
+      <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-8 space-y-6 relative overflow-hidden">
+
         {/* TOP BAR & BRAND */}
         <div className="flex items-center justify-between">
           <Link
@@ -43,7 +50,7 @@ export default function AccountLoginPage() {
         </div>
 
         {/* HEADER */}
-        <div className="space-y-2">
+        <div className="space-y-1">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
             Account Portal
           </h1>
@@ -52,18 +59,27 @@ export default function AccountLoginPage() {
           </p>
         </div>
 
-        {/* GOOGLE AUTH BUTTON */}
-        <div className="space-y-4">
+        {/* SOCIAL AUTH BUTTONS (Google & GitHub) */}
+        <div className="space-y-3">
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-white hover:bg-gray-50 text-gray-800 font-bold py-3.5 px-4 border border-gray-200 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 text-sm"
+            className="w-full bg-white hover:bg-gray-50 text-gray-800 font-bold py-3 px-4 border border-gray-200 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 text-sm cursor-pointer"
           >
             <FcGoogle className="text-xl" />
             <span>Continue with Google</span>
           </button>
 
-          <div className="relative flex items-center justify-center my-6">
+          <button
+            onClick={handleGithubLogin}
+            disabled={loading}
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-3 text-sm cursor-pointer"
+          >
+            <FaGithub className="text-xl" />
+            <span>Continue with GitHub</span>
+          </button>
+
+          <div className="relative flex items-center justify-center my-4">
             <div className="border-t border-gray-200 w-full" />
             <span className="bg-white px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 absolute">
               or credentials
@@ -115,11 +131,14 @@ export default function AccountLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2a6ee5] hover:bg-blue-600 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md text-sm flex items-center justify-center gap-2 mt-2"
+            className="w-full bg-[#2a6ee5] hover:bg-blue-600 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer"
           >
             {loading ? "Signing in..." : "Sign In to Account"}
           </button>
         </form>
+
+        {/* PHONE NUMBER LOGIN SECTION */}
+        <PhoneAuthSection />
 
         {/* SECURITY NOTE & SIGN UP OPTION */}
         <div className="pt-4 border-t border-gray-100 flex flex-col items-center gap-3 text-center">
