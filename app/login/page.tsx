@@ -34,7 +34,7 @@ export default function AccountPortalPage() {
   };
 
   // Handle Credentials (Email / Password)
-  const handleEmailSignIn = async (e) => {
+  const handleEmailSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     await signIn('credentials', {
@@ -46,7 +46,7 @@ export default function AccountPortalPage() {
   };
 
   // Trigger Phone OTP request
-  const handleSendOtp = (e) => {
+  const handleSendOtp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!phone) return;
     setOtpSent(true);
@@ -54,7 +54,7 @@ export default function AccountPortalPage() {
   };
 
   // Verify Phone OTP via NextAuth
-  const handleVerifyOtp = async (e) => {
+  const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     await signIn('phone-otp', {

@@ -21,8 +21,14 @@ export default async function FullProfilePage() {
     redirect("/login");
   }
 
+  // Cast session.user to include custom properties (phone, country)
+  const user = session.user as typeof session.user & {
+    phone?: string;
+    country?: string;
+  };
+
   // Split name into first and last name if available
-  const fullName = session.user.name || "Academic Member";
+  const fullName = user.name || "Academic Member";
   const nameParts = fullName.split(" ");
   const firstName = nameParts[0] || "";
   const lastName = nameParts.slice(1).join(" ") || "";
@@ -47,9 +53,9 @@ export default async function FullProfilePage() {
         {/* Profile Header & Avatar */}
         <div className="text-center space-y-3">
           <div className="w-24 h-24 bg-blue-50 text-[#2a6ee5] rounded-full flex items-center justify-center text-3xl font-bold mx-auto border-4 border-blue-100 shadow-inner overflow-hidden">
-            {session.user.image ? (
+            {user.image ? (
               <img
-                src={session.user.image}
+                src={user.image}
                 alt="Profile Avatar"
                 className="w-full h-full object-cover"
               />
@@ -62,7 +68,7 @@ export default async function FullProfilePage() {
               {fullName}
             </h1>
             <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1.5">
-              <FaEnvelope className="text-gray-400" /> {session.user.email || "Phone Authenticated User"}
+              <FaEnvelope className="text-gray-400" /> {user.email || "Phone Authenticated User"}
             </p>
           </div>
         </div>
@@ -91,7 +97,7 @@ export default async function FullProfilePage() {
             <span className="text-gray-400 font-semibold flex items-center gap-2">
               <FaPhoneAlt className="text-xs" /> Phone Contact
             </span>
-            <span className="font-semibold text-gray-800">{session.user.phone || "+1 (555) 382-9011"}</span>
+            <span className="font-semibold text-gray-800">{user.phone || "+1 (555) 382-9011"}</span>
           </div>
 
           {/* Region / Country of Residence */}
@@ -100,7 +106,7 @@ export default async function FullProfilePage() {
               <FaGlobeAmericas className="text-xs" /> Country / Region
             </span>
             <span className="font-semibold text-gray-800">
-              {session.user.country || "Nigeria"}
+              {user.country || "Nigeria"}
             </span>
           </div>
 
@@ -110,7 +116,7 @@ export default async function FullProfilePage() {
               <FaIdBadge className="text-xs" /> Student Account ID
             </span>
             <span className="font-mono font-medium text-gray-700">
-              {session.user.id || "EDU-84920"}
+              {user.id || "EDU-84920"}
             </span>
           </div>
 

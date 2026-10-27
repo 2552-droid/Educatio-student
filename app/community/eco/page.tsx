@@ -11,7 +11,6 @@ import {
   FaClock, 
   FaLaptopCode, 
   FaStethoscope, 
-  FaScaleBalanced,
   FaArrowRight,
   FaUserGraduate
 } from "react-icons/fa";
