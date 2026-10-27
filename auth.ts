@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
-// ❌ Remove: import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
 import { globalOtpStore } from "@/app/api/auth/send-otp/route";
 
@@ -9,7 +8,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google,
     GitHub,
-    // ❌ Remove: Apple,
     Credentials({
       id: "phone-number",
       name: "Phone Number",

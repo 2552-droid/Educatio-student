@@ -1,21 +1,37 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { FaArrowLeft, FaUser, FaEnvelope, FaShieldAlt } from "react-icons/fa";
+import { 
+  FaArrowLeft, 
+  FaUser, 
+  FaShieldAlt, 
+  FaPhoneAlt, 
+  FaEnvelope, 
+  FaIdBadge, 
+  FaGraduationCap,
+  FaSignOutAlt,
+  FaGlobeAmericas
+} from "react-icons/fa";
 
-export default async function ProfilePage() {
+export default async function FullProfilePage() {
   const session = await auth();
 
-  // If user is not logged in, redirect them to the login page
+  // If user is not signed in, redirect them to login
   if (!session?.user) {
     redirect("/login");
   }
 
-  return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans text-gray-900">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-8 space-y-6 relative overflow-hidden">
+  // Split name into first and last name if available
+  const fullName = session.user.name || "Academic Member";
+  const nameParts = fullName.split(" ");
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ") || "";
 
-        {/* Top Bar / Back to Home */}
+  return (
+    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-900 flex items-center justify-center">
+      <div className="max-w-xl w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-8 sm:p-10 space-y-8 relative overflow-hidden">
+
+        {/* Top Navigation Bar */}
         <div className="flex items-center justify-between">
           <Link
             href="/"
@@ -24,18 +40,18 @@ export default async function ProfilePage() {
             <FaArrowLeft size={10} /> Back to Home
           </Link>
           <div className="text-xl font-extrabold text-[#2a6ee5] tracking-tight">
-            Educatio
+            Educatio Profile
           </div>
         </div>
 
-        {/* Profile Header */}
-        <div className="text-center space-y-3 pt-2">
-          <div className="w-20 h-20 bg-blue-50 text-[#2a6ee5] rounded-full flex items-center justify-center text-3xl font-bold mx-auto border-2 border-blue-100 shadow-inner">
+        {/* Profile Header & Avatar */}
+        <div className="text-center space-y-3">
+          <div className="w-24 h-24 bg-blue-50 text-[#2a6ee5] rounded-full flex items-center justify-center text-3xl font-bold mx-auto border-4 border-blue-100 shadow-inner overflow-hidden">
             {session.user.image ? (
               <img
                 src={session.user.image}
-                alt="Profile"
-                className="w-full h-full rounded-full object-cover"
+                alt="Profile Avatar"
+                className="w-full h-full object-cover"
               />
             ) : (
               <FaUser />
@@ -43,47 +59,108 @@ export default async function ProfilePage() {
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-gray-900">
-              {session.user.name || "Academic Member"}
+              {fullName}
             </h1>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {session.user.email || "Phone Authenticated User"}
+            <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1.5">
+              <FaEnvelope className="text-gray-400" /> {session.user.email || "Phone Authenticated User"}
             </p>
           </div>
         </div>
 
-        {/* User Details Card */}
-        <div className="bg-gray-50 rounded-2xl p-5 space-y-3 border border-gray-100 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400 font-semibold uppercase tracking-wider">Account ID</span>
-            <span className="font-mono text-gray-700 truncate max-w-[200px]">{session.user.id || "N/A"}</span>
+        {/* Comprehensive Account Details Grid */}
+        <div className="bg-gray-50 rounded-3xl p-6 space-y-4 border border-gray-100 text-xs sm:text-sm">
+          
+          {/* First Name */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+            <span className="text-gray-400 font-semibold flex items-center gap-2">
+              <FaUser className="text-xs" /> First Name
+            </span>
+            <span className="font-semibold text-gray-800">{firstName}</span>
           </div>
-          <div className="border-t border-gray-200/60 my-1"></div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400 font-semibold uppercase tracking-wider">Email Address</span>
-            <span className="text-gray-700 font-medium">{session.user.email || "Not linked"}</span>
+
+          {/* Last Name */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+            <span className="text-gray-400 font-semibold flex items-center gap-2">
+              <FaUser className="text-xs" /> Last Name
+            </span>
+            <span className="font-semibold text-gray-800">{lastName || "Not Provided"}</span>
           </div>
+
+          {/* Phone Contact */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+            <span className="text-gray-400 font-semibold flex items-center gap-2">
+              <FaPhoneAlt className="text-xs" /> Phone Contact
+            </span>
+            <span className="font-semibold text-gray-800">{session.user.phone || "+1 (555) 382-9011"}</span>
+          </div>
+
+          {/* Region / Country of Residence */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+            <span className="text-gray-400 font-semibold flex items-center gap-2">
+              <FaGlobeAmericas className="text-xs" /> Country / Region
+            </span>
+            <span className="font-semibold text-gray-800">
+              {session.user.country || "Nigeria"}
+            </span>
+          </div>
+
+          {/* Student Account ID */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+            <span className="text-gray-400 font-semibold flex items-center gap-2">
+              <FaIdBadge className="text-xs" /> Student Account ID
+            </span>
+            <span className="font-mono font-medium text-gray-700">
+              {session.user.id || "EDU-84920"}
+            </span>
+          </div>
+
+          {/* Authentication Provider Status */}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200/60">
+            <span className="text-gray-400 font-semibold flex items-center gap-2">
+              <FaShieldAlt className="text-xs" /> Authentication Status
+            </span>
+            <span className="font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full text-[11px]">
+              Verified Active Session
+            </span>
+          </div>
+
+          {/* Registered Hubs */}
+          <div className="pt-2">
+            <span className="text-gray-400 font-semibold flex items-center gap-2 mb-2">
+              <FaGraduationCap className="text-xs text-[#2a6ee5]" /> Registered Hubs & Courses
+            </span>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="bg-blue-100 text-[#2a6ee5] px-3 py-1 rounded-xl font-bold text-xs">
+                Computer Science
+              </span>
+            </div>
+          </div>
+
         </div>
 
-        {/* Sign Out Form */}
-        <form
-          action={async () => {
-            "use server";
-            await signOut({ redirectTo: "/login" });
-          }}
-        >
-          <button
-            type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md text-sm cursor-pointer"
+        {/* Action Buttons */}
+        <div className="space-y-3 pt-2">
+          <Link
+            href="/dashboard"
+            className="block w-full text-center bg-[#2a6ee5] hover:bg-blue-600 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md text-xs sm:text-sm"
           >
-            Sign Out of Account
-          </button>
-        </form>
+            Go to Student Dashboard
+          </Link>
 
-        {/* Security Badge */}
-        <div className="pt-2 flex justify-center">
-          <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
-            <FaShieldAlt className="text-emerald-600" /> Secure Active Session
-          </div>
+          {/* Server Action Sign Out Form */}
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/login" });
+            }}
+          >
+            <button
+              type="submit"
+              className="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-3.5 rounded-2xl transition-all text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <FaSignOutAlt /> Sign Out of Account
+            </button>
+          </form>
         </div>
 
       </div>

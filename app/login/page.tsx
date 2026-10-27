@@ -1,129 +1,155 @@
-"use client";
-import { PhoneAuthSection } from "@/app/components/PhoneAuthSection";
-import { useState } from "react";
-import Link from "next/link";
-import { FaEnvelope, FaLock, FaArrowLeft, FaShieldAlt } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
+'use client';
 
-export default function AccountLoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { 
+  FaGoogle, 
+  FaGithub, 
+  FaEnvelope, 
+  FaLock, 
+  FaPhoneAlt, 
+  FaShieldAlt, 
+  FaChevronDown, 
+  FaChevronUp 
+} from 'react-icons/fa';
+
+export default function AccountPortalPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [showPhoneLogin, setShowPhoneLogin] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleGoogleLogin = () => {
-    setLoading(true);
-    // Redirects to Auth.js Google authentication route
-    window.location.href = "/api/auth/signin/google";
+  // Handle Google Login
+  const handleGoogleSignIn = () => {
+    signIn('google', { callbackUrl: '/dashboard' });
   };
 
-  const handleGithubLogin = () => {
-    setLoading(true);
-    // Redirects to Auth.js GitHub authentication route
-    window.location.href = "/api/auth/signin/github";
+  // Handle GitHub Login
+  const handleGithubSignIn = () => {
+    signIn('github', { callbackUrl: '/dashboard' });
   };
 
-  const handleEmailLogin = (e: React.FormEvent) => {
+  // Handle Credentials (Email / Password)
+  const handleEmailSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate login redirect to dashboard
-    setTimeout(() => {
-      window.location.href = "/dashboard";
-    }, 1000);
+    await signIn('credentials', {
+      email,
+      password,
+      callbackUrl: '/dashboard',
+    });
+    setLoading(false);
+  };
+
+  // Trigger Phone OTP request
+  const handleSendOtp = (e) => {
+    e.preventDefault();
+    if (!phone) return;
+    setOtpSent(true);
+    // In production, trigger your Twilio/Firebase SMS dispatch API here
+  };
+
+  // Verify Phone OTP via NextAuth
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    await signIn('phone-otp', {
+      phone,
+      otp,
+      callbackUrl: '/dashboard',
+    });
+    setLoading(false);
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans text-gray-900">
-      <div className="max-w-md w-full bg-white rounded-3xl border border-gray-100 shadow-xl p-8 space-y-6 relative overflow-hidden">
-
-        {/* TOP BAR & BRAND */}
-        <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-gray-500 hover:text-[#2a6ee5] transition-colors"
-          >
-            <FaArrowLeft size={10} /> Back to Home
-          </Link>
-          <div className="text-xl font-extrabold text-[#2a6ee5] tracking-tight">
-            Educatio
-          </div>
-        </div>
-
-        {/* HEADER */}
-        <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+    <main className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans text-gray-900">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-gray-100 p-8 sm:p-10 space-y-6">
+        
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
             Account Portal
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+          <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
             Sign in to access your course hubs, textbooks, and anonymous tutoring network.
           </p>
         </div>
 
-        {/* SOCIAL AUTH BUTTONS (Google & GitHub) */}
+        {/* OAuth Social Logins */}
         <div className="space-y-3">
           <button
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full bg-white hover:bg-gray-50 text-gray-800 font-bold py-3 px-4 border border-gray-200 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 text-sm cursor-pointer"
+            onClick={handleGoogleSignIn}
+            type="button"
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-2xl text-xs sm:text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-all shadow-sm cursor-pointer"
           >
-            <FcGoogle className="text-xl" />
-            <span>Continue with Google</span>
+            <FaGoogle className="text-red-500 text-base" />
+            Continue with Google
           </button>
 
           <button
-            onClick={handleGithubLogin}
-            disabled={loading}
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-2xl transition-all shadow-sm flex items-center justify-center gap-3 text-sm cursor-pointer"
+            onClick={handleGithubSignIn}
+            type="button"
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl text-xs sm:text-sm font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-all shadow-sm cursor-pointer"
           >
-            <FaGithub className="text-xl" />
-            <span>Continue with GitHub</span>
+            <FaGithub className="text-base" />
+            Continue with GitHub
           </button>
-
-          <div className="relative flex items-center justify-center my-4">
-            <div className="border-t border-gray-200 w-full" />
-            <span className="bg-white px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 absolute">
-              or credentials
-            </span>
-          </div>
         </div>
 
-        {/* EMAIL & PASSWORD FORM */}
-        <form onSubmit={handleEmailLogin} className="space-y-4">
-          <div className="space-y-1">
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+        {/* Divider */}
+        <div className="relative flex py-1 items-center">
+          <div className="flex-grow border-t border-gray-200"></div>
+          <span className="flex-shrink mx-4 text-[11px] font-extrabold tracking-wider text-gray-400 uppercase">
+            Or credentials
+          </span>
+          <div className="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        {/* Standard Email / Password Form */}
+        <form onSubmit={handleEmailSignIn} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
               Email Address
             </label>
             <div className="relative">
-              <FaEnvelope className="absolute left-4 top-4 text-gray-400 text-xs" />
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                <FaEnvelope className="text-xs" />
+              </span>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="student@university.edu"
-                className="w-full bg-gray-50 border border-gray-200 rounded-2xl py-3 pl-11 pr-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#2a6ee5]/40 text-gray-900"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2a6ee5] focus:bg-white transition-all"
               />
             </div>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
+          <div>
+            <div className="flex items-center justify-between mb-1">
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Password
               </label>
-              <a href="#" className="text-[11px] font-semibold text-[#2a6ee5] hover:underline">
+              <a href="#forgot" className="text-xs font-semibold text-[#2a6ee5] hover:underline">
                 Forgot password?
               </a>
             </div>
             <div className="relative">
-              <FaLock className="absolute left-4 top-4 text-gray-400 text-xs" />
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                <FaLock className="text-xs" />
+              </span>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-gray-50 border border-gray-200 rounded-2xl py-3 pl-11 pr-4 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#2a6ee5]/40 text-gray-900"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-xs sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2a6ee5] focus:bg-white transition-all"
               />
             </div>
           </div>
@@ -131,25 +157,80 @@ export default function AccountLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2a6ee5] hover:bg-blue-600 text-white font-bold py-3.5 rounded-2xl transition-all shadow-md text-sm flex items-center justify-center gap-2 mt-2 cursor-pointer"
+            className="w-full py-3.5 px-4 bg-[#2a6ee5] hover:bg-blue-600 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In to Account"}
           </button>
         </form>
 
-        {/* PHONE NUMBER LOGIN SECTION */}
-        <PhoneAuthSection />
-
-        {/* SECURITY NOTE & SIGN UP OPTION */}
-        <div className="pt-4 border-t border-gray-100 flex flex-col items-center gap-3 text-center">
-          <p className="text-xs text-gray-500">
-            Don't have an account?{" "}
-            <span className="font-bold text-[#2a6ee5] hover:underline cursor-pointer">
-              Register here
+        {/* Phone OTP Collapsible Drawer */}
+        <div className="border border-gray-200 rounded-2xl overflow-hidden transition-all">
+          <button
+            type="button"
+            onClick={() => setShowPhoneLogin(!showPhoneLogin)}
+            className="w-full flex items-center justify-between p-3.5 bg-gray-50 hover:bg-gray-100 text-xs font-bold text-gray-700 uppercase tracking-wider transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <FaPhoneAlt className="text-[#2a6ee5]" />
+              Continue with Phone Number (OTP)
             </span>
+            {showPhoneLogin ? <FaChevronUp className="text-gray-400" /> : <FaChevronDown className="text-gray-400" />}
+          </button>
+
+          {showPhoneLogin && (
+            <div className="p-4 bg-white border-t border-gray-200 space-y-3">
+              {!otpSent ? (
+                <form onSubmit={handleSendOtp} className="space-y-3">
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+234 800 000 0000"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#2a6ee5]"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  >
+                    Send OTP Code
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOtp} className="space-y-3">
+                  <input
+                    type="text"
+                    required
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="Enter 6-digit OTP (e.g., 123456)"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#2a6ee5]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-2.5 bg-[#2a6ee5] hover:bg-blue-600 text-white font-bold rounded-xl text-xs transition-colors cursor-pointer"
+                  >
+                    {loading ? "Verifying..." : "Verify & Sign In"}
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer & Registration Redirection */}
+        <div className="text-center space-y-3 pt-2">
+          <p className="text-xs text-gray-500">
+            Don't have an account?{' '}
+            <Link href="/register" className="text-[#2a6ee5] font-bold hover:underline">
+              Register here
+            </Link>
           </p>
-          <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
-            <FaShieldAlt className="text-emerald-600" /> Secure SSL Encrypted Session
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[11px] font-semibold border border-emerald-100">
+            <FaShieldAlt className="text-xs" />
+            Secure SSL Encrypted Session
           </div>
         </div>
 

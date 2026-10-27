@@ -5,7 +5,7 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import { Theme } from "./theme";
 import { IoIosMenu, IoMdClose } from "react-icons/io";
 import { useState, useRef, useEffect } from "react";
-import { FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaSignOutAlt, FaBook, FaPhoneAlt, FaEnvelope, FaIdBadge } from "react-icons/fa";
 import { useSession, signOut } from "next-auth/react";
 
 type NavLink = {
@@ -96,42 +96,78 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* Mini Dropdown Menu */}
+            {/* Comprehensive Mini Dropdown Menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50">
-                {/* User Info Header */}
-                <div className="px-4 py-2 border-b border-gray-100">
-                  <p className="text-xs font-bold text-gray-900 truncate">
-                    {session.user.name || "Academic Member"}
-                  </p>
-                  <p className="text-[11px] text-gray-500 truncate mt-0.5">
-                    {session.user.email || "Phone Authenticated User"}
-                  </p>
+              <div className="absolute right-0 mt-3 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 py-4 px-4 z-50 space-y-4 text-xs font-sans">
+                
+                {/* Header User Info */}
+                <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
+                    {session.user.image ? (
+                      <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-blue-50 text-[#2a6ee5] flex items-center justify-center font-bold">
+                        {session.user.name?.[0] || <FaUser />}
+                      </div>
+                    )}
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="text-sm font-extrabold text-gray-900 truncate">
+                      {session.user.name || "Academic Member"}
+                    </p>
+                    <p className="text-[11px] text-gray-500 truncate flex items-center gap-1 mt-0.5">
+                      <FaEnvelope className="text-gray-400 text-[10px]" /> {session.user.email || "No email linked"}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Profile Link Option */}
-                <div className="py-1">
+                {/* Detailed Student Attributes */}
+                <div className="bg-gray-50 rounded-2xl p-3 space-y-2 border border-gray-100 text-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 font-semibold flex items-center gap-1.5">
+                      <FaPhoneAlt className="text-[10px]" /> Phone / Contact
+                    </span>
+                    <span className="font-medium text-gray-800">+1 (555) 382-9011</span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 font-semibold flex items-center gap-1.5">
+                      <FaIdBadge className="text-[10px]" /> Student ID
+                    </span>
+                    <span className="font-mono text-gray-800">{session.user.id?.slice(0, 8) || "EDU-84920"}</span>
+                  </div>
+
+                  <div className="border-t border-gray-200/60 pt-1.5">
+                    <span className="text-gray-400 font-semibold block mb-1">Registered Hubs & Courses:</span>
+                    <div className="flex flex-wrap gap-1">
+                      <span className="bg-blue-100 text-[#2a6ee5] px-2 py-0.5 rounded-md font-bold text-[10px]">Computer Science</span>
+                      <span className="bg-red-100 text-[#E73F1E] px-2 py-0.5 rounded-md font-bold text-[10px]">Medicine</span>
+                      <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold text-[10px]">Law</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-1 pt-1">
                   <Link
                     href="/Profile"
                     onClick={() => setDropdownOpen(false)}
-                    className="block px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                    className="block text-center py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold transition-colors"
                   >
-                    View Full Profile
+                    View Full Profile Dashboard
                   </Link>
-                </div>
 
-                {/* Sign Out Option */}
-                <div className="border-t border-gray-100 pt-1">
                   <button
                     onClick={() => {
                       setDropdownOpen(false);
                       signOut({ callbackUrl: "/login" });
                     }}
-                    className="w-full text-left px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 cursor-pointer"
+                    className="w-full text-center py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors font-bold flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <FaSignOutAlt /> Sign Out
                   </button>
                 </div>
+
               </div>
             )}
           </div>
@@ -168,19 +204,25 @@ export default function Navbar() {
         <div className="flex flex-col items-center gap-6 px-6">
           {session?.user ? (
             <div className="flex flex-col items-center gap-4 w-full">
-              <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl w-full max-w-xs border border-gray-100">
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
-                  {session.user.image ? (
-                    <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-blue-50 text-[#2a6ee5] flex items-center justify-center font-bold">
-                      {session.user.name?.[0] || <FaUser />}
-                    </div>
-                  )}
+              <div className="flex flex-col gap-2 bg-gray-50 p-4 rounded-2xl w-full max-w-xs border border-gray-100 text-xs">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 flex-shrink-0">
+                    {session.user.image ? (
+                      <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-blue-50 text-[#2a6ee5] flex items-center justify-center font-bold">
+                        {session.user.name?.[0] || <FaUser />}
+                      </div>
+                    )}
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="font-bold text-gray-900 truncate">{session.user.name || "Member"}</p>
+                    <p className="text-[11px] text-gray-500 truncate">{session.user.email}</p>
+                  </div>
                 </div>
-                <div className="overflow-hidden text-left">
-                  <p className="text-xs font-bold text-gray-900 truncate">{session.user.name || "Member"}</p>
-                  <p className="text-[11px] text-gray-500 truncate">{session.user.email || "Phone User"}</p>
+                <div className="border-t border-gray-200/60 pt-2 space-y-1 text-gray-600">
+                  <p><strong>Phone:</strong> +1 (555) 382-9011</p>
+                  <p><strong>Enrolled Hubs:</strong> Computer Science, Medicine, Law</p>
                 </div>
               </div>
               

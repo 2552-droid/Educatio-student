@@ -178,87 +178,83 @@ export default function DashboardOverview() {
             </div>
           </section>
 
-          
           {/* Recent Resource Downloads */}
-<section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
-  <h2 className="text-xl font-bold text-gray-900">Recently Saved Materials</h2>
-  
-  <div className="divide-y divide-gray-100">
-    
-    {/* Item 1: System Design Cheatsheet */}
-    <div className="py-3 flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <FaDownload className="text-gray-400 text-sm" />
-        <div>
-          <p className="text-sm font-semibold text-gray-800">
-            System Design Architecture Cheatsheet.pdf
-          </p>
-          <p className="text-xs text-gray-400">Computer Science • Added yesterday</p>
-        </div>
-      </div>
-      <a
-        href="/downloads/system-design-cheatsheet.pdf"
-        download="System Design Architecture Cheatsheet.pdf"
-        className="text-xs font-semibold text-[#2a6ee5] hover:underline cursor-pointer"
-      >
-        Download
-      </a>
-    </div>
+          <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+            <h2 className="text-xl font-bold text-gray-900">Recently Saved Materials</h2>
+            
+            <div className="divide-y divide-gray-100">
+              {/* Item 1: System Design Cheatsheet */}
+              <div className="py-3 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <FaDownload className="text-gray-400 text-sm" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      System Design Architecture Cheatsheet.pdf
+                    </p>
+                    <p className="text-xs text-gray-400">Computer Science • Added yesterday</p>
+                  </div>
+                </div>
+                <a
+                  href="/downloads/system-design-cheatsheet.pdf"
+                  download="System Design Architecture Cheatsheet.pdf"
+                  className="text-xs font-semibold text-[#2a6ee5] hover:underline cursor-pointer"
+                >
+                  Download
+                </a>
+              </div>
 
-    {/* Item 2: Cardiovascular Lecture Notes */}
-    <div className="py-3 flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <FaDownload className="text-gray-400 text-sm" />
-        <div>
-          <p className="text-sm font-semibold text-gray-800">
-            Cardiovascular System Lecture Notes.pdf
-          </p>
-          <p className="text-xs text-gray-400">Medicine • Added 3 days ago</p>
-        </div>
-      </div>
-      <a
-        href="/downloads/cardiovascular-system-notes.pdf"
-        download="Cardiovascular System Lecture Notes.pdf"
-        className="text-xs font-semibold text-[#2a6ee5] hover:underline cursor-pointer"
-      >
-        Download
-      </a>
-    </div>
+              {/* Item 2: Cardiovascular Lecture Notes */}
+              <div className="py-3 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <FaDownload className="text-gray-400 text-sm" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      Cardiovascular System Lecture Notes.pdf
+                    </p>
+                    <p className="text-xs text-gray-400">Medicine • Added 3 days ago</p>
+                  </div>
+                </div>
+                <a
+                  href="/downloads/cardiovascular-system-notes.pdf"
+                  download="Cardiovascular System Lecture Notes.pdf"
+                  className="text-xs font-semibold text-[#2a6ee5] hover:underline cursor-pointer"
+                >
+                  Download
+                </a>
+              </div>
 
-    {/* Item 3: Landmark Supreme Court Cases */}
-    <div className="py-3 flex justify-between items-center">
-      <div className="flex items-center gap-3">
-        <FaDownload className="text-gray-400 text-sm" />
-        <div>
-          <p className="text-sm font-semibold text-gray-800">
-            Landmark Supreme Court Cases Summary.pdf
-          </p>
-          <p className="text-xs text-gray-400">Law • Added 5 days ago</p>
-        </div>
-      </div>
-      <a
-        href="/downloads/supreme-court-cases-summary.pdf"
-        download="Landmark Supreme Court Cases Summary.pdf"
-        className="text-xs font-semibold text-[#2a6ee5] hover:underline cursor-pointer"
-      >
-        Download
-      </a>
-    </div>
-
-  </div>
-</section>
+              {/* Item 3: Landmark Supreme Court Cases */}
+              <div className="py-3 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <FaDownload className="text-gray-400 text-sm" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      Landmark Supreme Court Cases Summary.pdf
+                    </p>
+                    <p className="text-xs text-gray-400">Law • Added 5 days ago</p>
+                  </div>
+                </div>
+                <a
+                  href="/downloads/supreme-court-cases-summary.pdf"
+                  download="Landmark Supreme Court Cases Summary.pdf"
+                  className="text-xs font-semibold text-[#2a6ee5] hover:underline cursor-pointer"
+                >
+                  Download
+                </a>
+              </div>
+            </div>
+          </section>
 
         </div>
 
         {/* RIGHT COLUMN: Deadlines & Notifications */}
         <div className="space-y-8">
           
-          {/* Upcoming Schedule (Now Interactive) */}
+          {/* Upcoming Schedule */}
           <section className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
             <h2 className="text-xl font-bold text-gray-900">Upcoming Deadlines</h2>
 
             <div className="space-y-4">
-              {/* CS Mock Exam -> Links to Flashcards/Study */}
               <Link href="/flashcards" className="block group">
                 <div className="p-4 rounded-xl bg-red-50 border border-red-100 flex items-start gap-3 transition-all group-hover:bg-red-100/70">
                   <FaExclamationCircle className="text-[#E73F1E] mt-1 shrink-0" />
@@ -274,7 +270,6 @@ export default function DashboardOverview() {
                 </div>
               </Link>
 
-              {/* Medicine Lab Report -> Links to Library or Course */}
               <Link href="/dashboard/library" className="block group">
                 <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-start gap-3 transition-all group-hover:bg-amber-100/70">
                   <FaCalendarAlt className="text-amber-600 mt-1 shrink-0" />
