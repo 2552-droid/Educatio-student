@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { Sansita_Swashed, Slabo_13px } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/component/Navbar";
-import Footer from "@/component/footer";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import ClientLayout from "@/component/ClientLayout";
 
 const sansitaSwashed = Sansita_Swashed({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"]
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
 const slabo = Slabo_13px({
   subsets: ["latin"],
-  weight: ["400"]
+  weight: ["400"],
 });
 
 export const metadata: Metadata = {
@@ -21,23 +21,21 @@ export const metadata: Metadata = {
   description: "",
 };
 
-export default async function RootLayout({ 
-  children 
-}: { 
-  children: React.ReactNode 
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
 }) {
   const session = await auth();
 
   return (
-    <html
-      lang="en"
-      className={`${slabo.className} h-full antialiased`}
-    >
+    <html lang="en" className={`${slabo.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <SessionProvider session={session}>
-          <Navbar />
-          {children}
-          <Footer /> 
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+          <SpeedInsights />
         </SessionProvider>
       </body>
     </html>

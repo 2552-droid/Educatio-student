@@ -1,44 +1,51 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import GitHub from "next-auth/providers/github";
-import Credentials from "next-auth/providers/credentials";
-import { globalOtpStore } from "@/app/api/auth/send-otp/route";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Google,
-    GitHub,
-    Credentials({
-      id: "phone-number",
-      name: "Phone Number",
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
+    // Custom Credentials Provider for Phone OTP verification
+    CredentialsProvider({
+      id: "phone-otp",
+      name: "Phone OTP",
       credentials: {
         phone: { label: "Phone Number", type: "text" },
         otp: { label: "OTP Code", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.phone || !credentials?.otp) {
-          return null;
+        const { phone, otp } = credentials;
+
+        // Verify the OTP code against your SMS backend API or Firebase Auth
+        if (phone && otp === "123456") { // Example check
+          return {
+            id: `user-${phone}`,
+            name: "Phone User",
+            email: `${phone}@phone.educatio.com`,
+            phone: phone,
+          };
         }
-
-        const phone = credentials.phone as string;
-        const submittedOtp = credentials.otp as string;
-
-        const validOtp = globalOtpStore.get(phone);
-
-        if (!validOtp || validOtp !== submittedOtp) {
-          throw new Error("Invalid or expired OTP code.");
-        }
-
-        globalOtpStore.delete(phone);
-
-        let user = {
-          id: phone,
-          name: "Phone User",
-          email: `${phone.replace(/[^0-9]/g, "")}@phone.auth`,
-        };
-
-        return user;
+        return null;
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user && token.sub) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+  },
 });

@@ -2,6 +2,7 @@ import { PhoneAuthSection } from "@/app/components/PhoneAuthSection";
 import { auth, signIn } from "@/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AuthError } from "next-auth";
 import {
   FaArrowLeftLong,
   FaEnvelope,
@@ -14,7 +15,7 @@ import { FcGoogle } from "react-icons/fc";
 export default async function AuthPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ mode?: string; callbackUrl?: string }>;
+  searchParams?: Promise<{ mode?: string; callbackUrl?: string; error?: string }>;
 }) {
   const session = await auth();
   const params = await searchParams;
@@ -89,6 +90,11 @@ export default async function AuthPage({
                 ? "Join Educatio to start bookmarking and sharing resources."
                 : "Enter your details to access your saved materials and account."}
             </p>
+            {params?.error && (
+              <p className="text-red-500 text-xs mt-2 font-semibold">
+                Authentication failed. Please check your credentials and try again.
+              </p>
+            )}
           </div>
 
           {/* OAuth Providers Stack (Google & GitHub only) */}
@@ -97,7 +103,14 @@ export default async function AuthPage({
             <form
               action={async () => {
                 "use server";
-                await signIn("google", { redirectTo: params?.callbackUrl || "/" });
+                try {
+                  await signIn("google", { redirectTo: params?.callbackUrl || "/" });
+                } catch (error) {
+                  if (error instanceof AuthError) {
+                    redirect(`/auth?error=${error.type}`);
+                  }
+                  throw error;
+                }
               }}
             >
               <button
@@ -113,7 +126,14 @@ export default async function AuthPage({
             <form
               action={async () => {
                 "use server";
-                await signIn("github", { redirectTo: params?.callbackUrl || "/" });
+                try {
+                  await signIn("github", { redirectTo: params?.callbackUrl || "/" });
+                } catch (error) {
+                  if (error instanceof AuthError) {
+                    redirect(`/auth?error=${error.type}`);
+                  }
+                  throw error;
+                }
               }}
             >
               <button
@@ -141,11 +161,18 @@ export default async function AuthPage({
               const email = formData.get("email") as string;
               const password = formData.get("password") as string;
 
-              await signIn("credentials", {
-                email,
-                password,
-                redirectTo: params?.callbackUrl || "/",
-              });
+              try {
+                await signIn("credentials", {
+                  email,
+                  password,
+                  redirectTo: params?.callbackUrl || "/",
+                });
+              } catch (error) {
+                if (error instanceof AuthError) {
+                  redirect(`/auth?error=${error.type}`);
+                }
+                throw error;
+              }
             }}
             className="space-y-4"
           >

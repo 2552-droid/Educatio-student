@@ -1,8 +1,6 @@
 // app/api/auth/send-otp/route.ts
 import { NextResponse } from "next/server";
-
-// Temporary in-memory store for demo (Use Redis or a Database in production)
-export const globalOtpStore = new Map<string, string>();
+import { globalOtpStore } from "@/lib/otpStore"; // 👈 Imported from the shared utility file
 
 export async function POST(req: Request) {
   try {
